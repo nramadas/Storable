@@ -1,0 +1,37 @@
+{
+  "name": "storable",
+  "version": "0.0.1",
+  "description": "A javascript datastore built using RxJS Observables",
+  "main": "index.js",
+  "scripts": {
+    "compile": "babel -d bin/ src/",
+    "prepublish": "npm run compile",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nramadas/Storable.git"
+  },
+  "keywords": [
+    "datastore",
+    "observable",
+    "rx",
+    "rxjs"
+  ],
+  "author": "Niranjan Ramadas <nrbramadas@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nramadas/Storable/issues"
+  },
+  "homepage": "https://github.com/nramadas/Storable#readme",
+  "devDependencies": {
+    "babel": "^5.8.23",
+    "jest": "^0.1.40",
+    "lodash": "^3.10.1",
+    "rx": "^3.1.2"
+  },
+  "dependencies": {
+    "lodash": "^3.10.1",
+    "rx": "^3.1.2"
+  }
+}
