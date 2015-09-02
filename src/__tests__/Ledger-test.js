@@ -22,4 +22,4 @@ describe("Ledger", () => {
         l.record({boo: "baz"});
         expect(l.peek()).toEqual([{foo: "bar"}, {boo: "baz"}]);
     });
-})
+});
