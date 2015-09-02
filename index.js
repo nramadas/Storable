@@ -1,5 +1,4 @@
-var Inventory = require("./bin/Inventory");
-
 module.exports = {
-    Inventory: Inventory
+    Inventory:  require("./bin/Inventory"),
+    Ledger:     require("./bin/Ledger")
 }
