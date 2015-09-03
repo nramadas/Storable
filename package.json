@@ -1,6 +1,6 @@
 {
   "name": "storablejs",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A javascript datastore built using RxJS Observables",
   "main": "index.js",
   "scripts": {
@@ -11,8 +11,15 @@
   "jest": {
     "rootDir": "./src",
     "scriptPreprocessor": "../node_modules/babel-jest",
-    "testFileExtensions": ["es6", "js"],
-    "moduleFileExtensions": ["js", "json", "es6"]
+    "testFileExtensions": [
+      "es6",
+      "js"
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "es6"
+    ]
   },
   "repository": {
     "type": "git",
