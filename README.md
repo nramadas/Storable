@@ -61,3 +61,13 @@ const seedFn = (saveData) => {
 
 store.query("foo", "bar", {ensure: seedFn});
 ```
+## Writing Data
+```es6
+store.emit({
+    foo: {
+        bar: "baz"
+    }
+});
+// NOTE: data can be deeply nested, even if the keys don't yet exist in the
+// Inventory. The keys are created as the data is written.
+```
