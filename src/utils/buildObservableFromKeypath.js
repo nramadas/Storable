@@ -16,6 +16,7 @@ export default function buildObservableFromKeyPath(baseObservable, keyPath) {
         currentObservable = currentObservable
             .map(x => x[key] || null)
             .filter(x => x !== null)
+            .distinctUntilChanged()
     }
 
     // alias the data
