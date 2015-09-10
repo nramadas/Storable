@@ -4,7 +4,7 @@
   "description": "A javascript datastore built using RxJS Observables",
   "main": "index.js",
   "scripts": {
-    "compile": "babel -i __tests__ -d bin/ src/",
+    "compile": "babel -i __tests__ -d ./ src/",
     "prepublish": "npm run compile && npm test",
     "test": "jest"
   },

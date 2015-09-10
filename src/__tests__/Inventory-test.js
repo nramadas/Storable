@@ -1,6 +1,6 @@
 // __tests__/Inventory-test.js
-jest.dontMock("../../bin/Inventory.js");
-const Inventory = require("../../bin/Inventory");
+jest.dontMock("../../Inventory.js");
+const Inventory = require("../../Inventory");
 
 describe("Inventory", () => {
     it("emits events when data is set", () => {

@@ -1,8 +1,8 @@
 // __tests__/Store-test.js
-jest.dontMock("../../bin/Store.js");
-const Inventory = require("../../bin/Inventory");
-const Ledger = require("../../bin/Ledger");
-const Store = require("../../bin/Store");
+jest.dontMock("../../Store.js");
+const Inventory = require("../../Inventory");
+const Ledger = require("../../Ledger");
+const Store = require("../../Store");
 const Rx = require("rx");
 
 describe("Store", () => {

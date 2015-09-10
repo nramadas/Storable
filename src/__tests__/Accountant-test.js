@@ -1,9 +1,9 @@
 // __tests__/Accountant-test.js
-jest.dontMock("../../bin/Accountant.js");
-const Inventory = require("../../bin/Inventory");
-const Ledger = require("../../bin/Ledger");
-const Store = require("../../bin/Store");
-const Accountant = require("../../bin/Accountant");
+jest.dontMock("../../Accountant.js");
+const Inventory = require("../../Inventory");
+const Ledger = require("../../Ledger");
+const Store = require("../../Store");
+const Accountant = require("../../Accountant");
 
 describe("Accountant", () => {
     it("has rewind and fastForward methods", () => {
@@ -41,6 +41,11 @@ describe("Accountant", () => {
         a.rewind(1);
         a.commit();
 
-        expect(l.peek()).toEqual([{delta: {foo: {bar: "thing1"}}, state: {foo: {bar: "thing1"}}}]);
+        expect(l.peek()).toEqual([
+            {
+                delta: {foo: {bar: "thing1"}},
+                state: {foo: {bar: "thing1"}}
+            }
+        ]);
     });
 });

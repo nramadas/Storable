@@ -1,5 +1,6 @@
 module.exports = {
-    Inventory:  require("./bin/Inventory"),
-    Ledger:     require("./bin/Ledger"),
-    Store:      require("./bin/Store")
+    Inventory:  require("./Inventory"),
+    Ledger:     require("./Ledger"),
+    Store:      require("./Store"),
+    Accountant: require("./Accountant")
 }
