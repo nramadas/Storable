@@ -24,6 +24,14 @@ var _lodashCollectionReduce = require("lodash/collection/reduce");
 
 var _lodashCollectionReduce2 = _interopRequireDefault(_lodashCollectionReduce);
 
+var _Inventory = require("./Inventory");
+
+var _Inventory2 = _interopRequireDefault(_Inventory);
+
+var _Ledger = require("./Ledger");
+
+var _Ledger2 = _interopRequireDefault(_Ledger);
+
 var _utilsEnsureDataIfNecessary = require("./utils/ensureDataIfNecessary");
 
 var _utilsEnsureDataIfNecessary2 = _interopRequireDefault(_utilsEnsureDataIfNecessary);
@@ -32,8 +40,11 @@ var _utilsBuildObservableFromKeyPath = require("./utils/buildObservableFromKeyPa
 
 var _utilsBuildObservableFromKeyPath2 = _interopRequireDefault(_utilsBuildObservableFromKeyPath);
 
-var Store = function Store(inventory, ledger) {
+var Store = function Store() {
     var _this = this;
+
+    var inventory = arguments.length <= 0 || arguments[0] === undefined ? new _Inventory2["default"]() : arguments[0];
+    var ledger = arguments.length <= 1 || arguments[1] === undefined ? new _Ledger2["default"]() : arguments[1];
 
     _classCallCheck(this, Store);
 

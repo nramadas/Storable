@@ -44,6 +44,9 @@ var Accountant = function Accountant(inventory, ledger) {
     _classCallCheck(this, Accountant);
 
     var currentIndex = ledger.peek().length - 1;
+    this.stream = ledger.stream.map(function (transactions) {
+        return { transactions: transactions, currentIndex: currentIndex };
+    });
 
     this.rewind = function (amount) {
         currentIndex = (0, _utilsClamp2["default"])(currentIndex - amount, 0, ledger.peek().length - 1);

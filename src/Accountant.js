@@ -10,6 +10,7 @@ import lastFrom         from "./utils/lastFrom";
 export default class Accountant {
     constructor(inventory, ledger) {
         let currentIndex = ledger.peek().length - 1;
+        this.stream = ledger.stream.map(transactions => ({transactions, currentIndex}));
 
         this.rewind = (amount) => {
             currentIndex = clamp(currentIndex - amount, 0, ledger.peek().length - 1);

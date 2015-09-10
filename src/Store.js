@@ -1,11 +1,13 @@
 import Rx                           from "rx";
 import map                          from "lodash/collection/map";
 import reduce                       from "lodash/collection/reduce";
+import Inventory                    from "./Inventory";
+import Ledger                       from "./Ledger";
 import ensureDataIfNecessary        from "./utils/ensureDataIfNecessary";
 import buildObservableFromKeyPath   from "./utils/buildObservableFromKeyPath";
 
 export default class Store {
-    constructor(inventory, ledger) {
+    constructor(inventory = new Inventory(), ledger = new Ledger()) {
         /**
          * The arguments to query has several possibilities.
          * 1) Flattened list of arguments: The arguments are cast as an Array
