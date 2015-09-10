@@ -1,6 +1,6 @@
 {
   "name": "storablejs",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A javascript datastore built using RxJS Observables",
   "main": "index.js",
   "scripts": {
