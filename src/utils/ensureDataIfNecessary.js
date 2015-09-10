@@ -10,12 +10,12 @@ export default function ensureDataIfNecessary(keyPath, inventory, emitter) {
     if (!(isPlainObject(options) && options.ensure)) return;
 
     // define the callback used by the ensurer to set the data
-    const saveData = (results) => {
+    const writeResult = (result) => {
         const data = {};
         let nested = data;
         for (let i = 0; i < keyPath.length; i++) {
             if (isPlainObject(keyPath[i+1])) { // the next key is the options
-                nested[keyPath[i]] = results;
+                nested[keyPath[i]] = result;
                 break;
             } else {
                 nested[keyPath[i]] = {};
@@ -33,7 +33,7 @@ export default function ensureDataIfNecessary(keyPath, inventory, emitter) {
         // if we get to the end, stop
         if (isPlainObject(key)) break;
         // call the ensurer if needed
-        if (isEmpty(currentData[key])) return options.ensure(saveData, keyPath);
+        if (isEmpty(currentData[key])) return options.ensure(writeResult, keyPath);
         // keep going
         currentData = currentData[key];
     }

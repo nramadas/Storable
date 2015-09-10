@@ -78,7 +78,7 @@ describe("Store", () => {
         s.emit({foo: "bar"});
 
         expect(callback.mock.calls[0][0]).toEqual({foo: "bar"});
-        expect(l.peek()).toEqual([{foo: "bar"}]);
+        expect(l.peek()).toEqual([{delta: {foo: "bar"}, state: {foo: "bar"}}]);
     });
 
     it("allows multiple values to be emitted at once", () => {
@@ -100,12 +100,19 @@ describe("Store", () => {
             gah: "thing2"
         });
 
-        expect(l.peek()).toEqual([{
-            foo: {bar: "thing1"}
-        }, {
-            foo: {bar: "thing1"},
-            boo: {bad: "thing2"}
-        }]);
+        expect(l.peek()).toEqual([
+            {
+                delta: {foo: {bar: "thing1"}},
+                state: {foo: {bar: "thing1"}},
+            },
+            {
+                delta: {boo: {bad: "thing2"}},
+                state: {
+                    foo: {bar: "thing1"},
+                    boo: {bad: "thing2"}
+                }
+            }
+        ]);
     });
 
     it("lets you seed data or ensure data", () => {
@@ -134,5 +141,17 @@ describe("Store", () => {
         expect(i.peek()).toEqual({
             foo: {bar: "baz"}
         });
+    });
+
+    it("doesn't emit events on data that does not change", () => {
+        const i = new Inventory();
+        const l = new Ledger();
+        const s = new Store(i, l);
+        const callback = jest.genMockFunction();
+
+        s.query("foo", "bar").forEach(callback);
+        s.emit({foo: {baz: "thing"}});
+
+        expect(callback).not.toBeCalled();
     });
 });

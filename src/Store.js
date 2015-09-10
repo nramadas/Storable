@@ -51,7 +51,7 @@ export default class Store {
             inventory.set(newData);
 
             // record the entire entire contents of the inventory
-            ledger.record(inventory.peek());
+            ledger.record(newData, inventory.peek());
         };
     }
 }

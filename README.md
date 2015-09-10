@@ -46,8 +46,8 @@ store.query(
 ```
 #### Seeding data
 ```es6
-const seedFn = (saveData) => {
-    saveData("foo");
+const seedFn = (writeResult) => {
+    writeResult("foo");
 };
 
 store.query("foo", "bar", {ensure: seedFn});
@@ -55,11 +55,11 @@ store.query("foo", "bar", {ensure: seedFn});
 #### Seeding data asynchronously
 Useful if the seed data comes from the server
 ```es6
-const seedFn = (saveData) => {
-    performServerCall().then(saveData);
+const fetchData = (writeResult) => {
+    performServerCall().then(writeResult);
 }
 
-store.query("foo", "bar", {ensure: seedFn});
+store.query("foo", "bar", {ensure: fetchData});
 ```
 ## Writing Data
 ```es6
