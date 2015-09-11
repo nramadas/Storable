@@ -10,21 +10,26 @@ import lastFrom         from "./utils/lastFrom";
 export default class Accountant {
     constructor(inventory, ledger) {
         let currentIndex = ledger.peek().length - 1;
-        this.stream = ledger.stream.map(transactions => ({transactions, currentIndex}));
+        let locked = true;
 
-        this.rewind = (amount) => {
-            currentIndex = clamp(currentIndex - amount, 0, ledger.peek().length - 1);
+        this.stream = ledger.stream.map(transactions => {
+            if (locked) currentIndex = transactions.length - 1;
+            return {transactions, currentIndex};
+        });
+
+        this.goto = (index) => {
+            locked = false;
+            currentIndex = clamp(index, 0, ledger.peek().length - 1);
             inventory.set(ledger.peek()[currentIndex].state);
         };
 
-        this.fastForward = (amount) => {
-            currentIndex = clamp(currentIndex + amount, 0, ledger.peek().length - 1);
-            inventory.set(ledger.peek()[currentIndex].state);
-        };
+        this.rewind = (amount) => this.goto(currentIndex - amount);
+        this.fastForward = (amount) => this.goto(currentIndex + amount);
 
         this.commit = () => {
             inventory.set(ledger.peek()[currentIndex].state);
             ledger.revertTo(currentIndex);
+            locked = true;
         };
     }
 }

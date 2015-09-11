@@ -41,26 +41,35 @@ var _utilsLastFrom = require("./utils/lastFrom");
 var _utilsLastFrom2 = _interopRequireDefault(_utilsLastFrom);
 
 var Accountant = function Accountant(inventory, ledger) {
+    var _this = this;
+
     _classCallCheck(this, Accountant);
 
     var currentIndex = ledger.peek().length - 1;
+    var locked = true;
+
     this.stream = ledger.stream.map(function (transactions) {
+        if (locked) currentIndex = transactions.length - 1;
         return { transactions: transactions, currentIndex: currentIndex };
     });
 
-    this.rewind = function (amount) {
-        currentIndex = (0, _utilsClamp2["default"])(currentIndex - amount, 0, ledger.peek().length - 1);
+    this.goto = function (index) {
+        locked = false;
+        currentIndex = (0, _utilsClamp2["default"])(index, 0, ledger.peek().length - 1);
         inventory.set(ledger.peek()[currentIndex].state);
     };
 
+    this.rewind = function (amount) {
+        return _this.goto(currentIndex - amount);
+    };
     this.fastForward = function (amount) {
-        currentIndex = (0, _utilsClamp2["default"])(currentIndex + amount, 0, ledger.peek().length - 1);
-        inventory.set(ledger.peek()[currentIndex].state);
+        return _this.goto(currentIndex + amount);
     };
 
     this.commit = function () {
         inventory.set(ledger.peek()[currentIndex].state);
         ledger.revertTo(currentIndex);
+        locked = true;
     };
 };
 
