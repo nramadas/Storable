@@ -66,7 +66,7 @@ var Accountant = function Accountant(inventory, ledger) {
         var transactions = _ref2[0];
 
         if (locked) currentIndex = transactions.length - 1;
-        return { transactions: transactions, currentIndex: currentIndex };
+        return { transactions: transactions, currentIndex: currentIndex, locked: locked };
     });
 
     this.goto = function (index) {
