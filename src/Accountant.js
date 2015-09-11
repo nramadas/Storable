@@ -20,7 +20,7 @@ export default class Accountant {
             .combineLatest(ledger.stream, currentIndexChanged, (...args) => args)
             .map(([transactions]) => {
                 if (locked) currentIndex = transactions.length - 1;
-                return {transactions, currentIndex};
+                return {transactions, currentIndex, locked};
             });
 
         this.goto = (index) => {
