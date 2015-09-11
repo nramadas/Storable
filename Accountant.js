@@ -82,6 +82,14 @@ var Accountant = function Accountant(inventory, ledger) {
     this.fastForward = function (amount) {
         return _this.goto(currentIndex + amount);
     };
+    this.pause = function () {
+        return locked = false;
+    };
+
+    this.resume = function () {
+        _this.goto(ledger.peek().length);
+        locked = true;
+    };
 
     this.commit = function () {
         inventory.set(ledger.peek()[currentIndex].state);
