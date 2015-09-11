@@ -9,18 +9,22 @@ import lastFrom         from "./utils/lastFrom";
 
 export default class Accountant {
     constructor(inventory, ledger) {
+        const currentIndexChanged = new Rx.ReplaySubject(1);
         let currentIndex = ledger.peek().length - 1;
         let locked = true;
 
-        this.stream = ledger.stream.map(transactions => {
-            if (locked) currentIndex = transactions.length - 1;
-            return {transactions, currentIndex};
-        });
+        this.stream = Rx.Observable
+            .combineLatest(ledger.stream, currentIndexChanged, (...args) => args)
+            .map(([transactions]) => {
+                if (locked) currentIndex = transactions.length - 1;
+                return {transactions, currentIndex};
+            });
 
         this.goto = (index) => {
             locked = false;
             currentIndex = clamp(index, 0, ledger.peek().length - 1);
             inventory.set(ledger.peek()[currentIndex].state);
+            currentIndexChanged.onNext({});
         };
 
         this.rewind = (amount) => this.goto(currentIndex - amount);

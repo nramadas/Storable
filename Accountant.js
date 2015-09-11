@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; })();
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -45,10 +47,21 @@ var Accountant = function Accountant(inventory, ledger) {
 
     _classCallCheck(this, Accountant);
 
+    var currentIndexChanged = new _rx2["default"].ReplaySubject(1);
     var currentIndex = ledger.peek().length - 1;
     var locked = true;
 
-    this.stream = ledger.stream.map(function (transactions) {
+    this.stream = _rx2["default"].Observable.combineLatest(ledger.stream, currentIndexChanged, function () {
+        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+        }
+
+        return args;
+    }).map(function (_ref) {
+        var _ref2 = _slicedToArray(_ref, 1);
+
+        var transactions = _ref2[0];
+
         if (locked) currentIndex = transactions.length - 1;
         return { transactions: transactions, currentIndex: currentIndex };
     });
@@ -57,6 +70,7 @@ var Accountant = function Accountant(inventory, ledger) {
         locked = false;
         currentIndex = (0, _utilsClamp2["default"])(index, 0, ledger.peek().length - 1);
         inventory.set(ledger.peek()[currentIndex].state);
+        currentIndexChanged.onNext({});
     };
 
     this.rewind = function (amount) {
