@@ -26,20 +26,27 @@ export default class Accountant {
         this.goto = (index) => {
             locked = false;
             currentIndex = clamp(index, 0, ledger.peek().length - 1);
-            inventory.set(ledger.peek()[currentIndex].state);
+            inventory.toggleLock(true);
+            inventory.set(ledger.peek()[currentIndex].state, true);
             currentIndexChanged.onNext({});
         };
 
         this.rewind = (amount) => this.goto(currentIndex - amount);
         this.fastForward = (amount) => this.goto(currentIndex + amount);
-        this.pause = () => locked = false;
+
+        this.pause = () => {
+            locked = false;
+            inventory.toggleLock(true);
+        };
 
         this.resume = () => {
             this.goto(ledger.peek().length);
+            inventory.toggleLock(false);
             locked = true;
         };
 
         this.commit = () => {
+            inventory.toggleLock(false);
             inventory.set(ledger.peek()[currentIndex].state);
             ledger.revertTo(currentIndex);
             locked = true;

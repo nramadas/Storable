@@ -72,7 +72,8 @@ var Accountant = function Accountant(inventory, ledger) {
     this.goto = function (index) {
         locked = false;
         currentIndex = (0, _utilsClamp2["default"])(index, 0, ledger.peek().length - 1);
-        inventory.set(ledger.peek()[currentIndex].state);
+        inventory.toggleLock(true);
+        inventory.set(ledger.peek()[currentIndex].state, true);
         currentIndexChanged.onNext({});
     };
 
@@ -82,16 +83,20 @@ var Accountant = function Accountant(inventory, ledger) {
     this.fastForward = function (amount) {
         return _this.goto(currentIndex + amount);
     };
+
     this.pause = function () {
-        return locked = false;
+        locked = false;
+        inventory.toggleLock(true);
     };
 
     this.resume = function () {
         _this.goto(ledger.peek().length);
+        inventory.toggleLock(false);
         locked = true;
     };
 
     this.commit = function () {
+        inventory.toggleLock(false);
         inventory.set(ledger.peek()[currentIndex].state);
         ledger.revertTo(currentIndex);
         locked = true;

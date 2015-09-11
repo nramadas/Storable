@@ -25,15 +25,20 @@ var Inventory = function Inventory() {
 
     _classCallCheck(this, Inventory);
 
+    var locked = false;
     this.contents = new _rx2["default"].ReplaySubject(1);
     this.contents.forEach(function (newState) {
         return state = newState;
     });
+    this.toggleLock = function (newLock) {
+        return locked = newLock;
+    };
     this.peek = function () {
         return _extends({}, state);
     };
     this.set = function (newState) {
-        return _this.contents.onNext((0, _utilsRecursiveExtend2["default"])(state, newState));
+        var force = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+        return (force || !locked) && _this.contents.onNext((0, _utilsRecursiveExtend2["default"])(state, newState));
     };
 };
 
