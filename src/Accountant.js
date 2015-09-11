@@ -13,6 +13,9 @@ export default class Accountant {
         let currentIndex = ledger.peek().length - 1;
         let locked = true;
 
+        // prime the stream
+        currentIndexChanged.onNext({});
+
         this.stream = Rx.Observable
             .combineLatest(ledger.stream, currentIndexChanged, (...args) => args)
             .map(([transactions]) => {
