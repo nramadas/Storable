@@ -32,6 +32,12 @@ export default class Accountant {
 
         this.rewind = (amount) => this.goto(currentIndex - amount);
         this.fastForward = (amount) => this.goto(currentIndex + amount);
+        this.pause = () => locked = false;
+
+        this.resume = () => {
+            this.goto(ledger.peek().length);
+            locked = true;
+        };
 
         this.commit = () => {
             inventory.set(ledger.peek()[currentIndex].state);

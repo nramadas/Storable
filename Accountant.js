@@ -51,6 +51,9 @@ var Accountant = function Accountant(inventory, ledger) {
     var currentIndex = ledger.peek().length - 1;
     var locked = true;
 
+    // prime the stream
+    currentIndexChanged.onNext({});
+
     this.stream = _rx2["default"].Observable.combineLatest(ledger.stream, currentIndexChanged, function () {
         for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
             args[_key] = arguments[_key];
