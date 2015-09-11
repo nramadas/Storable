@@ -70,7 +70,9 @@ var Accountant = function Accountant(inventory, ledger) {
     });
 
     this.goto = function (index) {
-        locked = false;
+        var newLocked = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+
+        locked = newLocked;
         currentIndex = (0, _utilsClamp2["default"])(index, 0, ledger.peek().length - 1);
         inventory.toggleLock(true);
         inventory.set(ledger.peek()[currentIndex].state, true);
@@ -91,15 +93,15 @@ var Accountant = function Accountant(inventory, ledger) {
 
     this.resume = function () {
         _this.goto(ledger.peek().length);
-        inventory.toggleLock(false);
+        inventory.toggleLock(false, true);
         locked = true;
     };
 
     this.commit = function () {
+        locked = true;
         inventory.toggleLock(false);
         inventory.set(ledger.peek()[currentIndex].state);
         ledger.revertTo(currentIndex);
-        locked = true;
     };
 };
 

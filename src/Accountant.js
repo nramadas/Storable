@@ -23,8 +23,8 @@ export default class Accountant {
                 return {transactions, currentIndex, locked};
             });
 
-        this.goto = (index) => {
-            locked = false;
+        this.goto = (index, newLocked=false) => {
+            locked = newLocked;
             currentIndex = clamp(index, 0, ledger.peek().length - 1);
             inventory.toggleLock(true);
             inventory.set(ledger.peek()[currentIndex].state, true);
@@ -41,15 +41,15 @@ export default class Accountant {
 
         this.resume = () => {
             this.goto(ledger.peek().length);
-            inventory.toggleLock(false);
+            inventory.toggleLock(false, true);
             locked = true;
         };
 
         this.commit = () => {
+            locked = true;
             inventory.toggleLock(false);
             inventory.set(ledger.peek()[currentIndex].state);
             ledger.revertTo(currentIndex);
-            locked = true;
         };
     }
 }
