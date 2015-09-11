@@ -40,7 +40,7 @@ export default class Accountant {
         };
 
         this.resume = () => {
-            this.goto(ledger.peek().length);
+            this.goto(ledger.peek().length, true);
             inventory.toggleLock(false, true);
             locked = true;
         };

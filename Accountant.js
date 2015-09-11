@@ -92,7 +92,7 @@ var Accountant = function Accountant(inventory, ledger) {
     };
 
     this.resume = function () {
-        _this.goto(ledger.peek().length);
+        _this.goto(ledger.peek().length, true);
         inventory.toggleLock(false, true);
         locked = true;
     };
