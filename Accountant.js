@@ -47,14 +47,14 @@ var Accountant = function Accountant(inventory, ledger) {
 
     _classCallCheck(this, Accountant);
 
-    var currentIndexChanged = new _rx2["default"].ReplaySubject(1);
+    var forceStreamEmit = new _rx2["default"].ReplaySubject(1);
     var currentIndex = ledger.peek().length - 1;
     var locked = true;
 
     // prime the stream
-    currentIndexChanged.onNext({});
+    forceStreamEmit.onNext({});
 
-    this.stream = _rx2["default"].Observable.combineLatest(ledger.stream, currentIndexChanged, function () {
+    this.stream = _rx2["default"].Observable.combineLatest(ledger.stream, forceStreamEmit, function () {
         for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
             args[_key] = arguments[_key];
         }
@@ -76,7 +76,7 @@ var Accountant = function Accountant(inventory, ledger) {
         currentIndex = (0, _utilsClamp2["default"])(index, 0, ledger.peek().length - 1);
         inventory.toggleLock(true);
         inventory.set(ledger.peek()[currentIndex].state, true);
-        currentIndexChanged.onNext({});
+        forceStreamEmit.onNext({});
     };
 
     this.rewind = function (amount) {
@@ -89,6 +89,7 @@ var Accountant = function Accountant(inventory, ledger) {
     this.pause = function () {
         locked = false;
         inventory.toggleLock(true);
+        forceStreamEmit.onNext({});
     };
 
     this.resume = function () {

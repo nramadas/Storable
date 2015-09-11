@@ -9,15 +9,15 @@ import lastFrom         from "./utils/lastFrom";
 
 export default class Accountant {
     constructor(inventory, ledger) {
-        const currentIndexChanged = new Rx.ReplaySubject(1);
+        const forceStreamEmit = new Rx.ReplaySubject(1);
         let currentIndex = ledger.peek().length - 1;
         let locked = true;
 
         // prime the stream
-        currentIndexChanged.onNext({});
+        forceStreamEmit.onNext({});
 
         this.stream = Rx.Observable
-            .combineLatest(ledger.stream, currentIndexChanged, (...args) => args)
+            .combineLatest(ledger.stream, forceStreamEmit, (...args) => args)
             .map(([transactions]) => {
                 if (locked) currentIndex = transactions.length - 1;
                 return {transactions, currentIndex, locked};
@@ -28,7 +28,7 @@ export default class Accountant {
             currentIndex = clamp(index, 0, ledger.peek().length - 1);
             inventory.toggleLock(true);
             inventory.set(ledger.peek()[currentIndex].state, true);
-            currentIndexChanged.onNext({});
+            forceStreamEmit.onNext({});
         };
 
         this.rewind = (amount) => this.goto(currentIndex - amount);
@@ -37,6 +37,7 @@ export default class Accountant {
         this.pause = () => {
             locked = false;
             inventory.toggleLock(true);
+            forceStreamEmit.onNext({});
         };
 
         this.resume = () => {
