@@ -21,20 +21,20 @@ var Ledger = function Ledger() {
 
     _classCallCheck(this, Ledger);
 
-    this.stream = new _rx2["default"].ReplaySubject(1);
+    this.updates = new _rx2["default"].ReplaySubject(1);
     this.peek = function () {
         return [].concat(_toConsumableArray(transactions));
     };
 
     this.record = function (delta, state) {
         transactions = transactions.concat([{ delta: delta, state: state }]);
-        _this.stream.onNext(transactions);
+        _this.updates.onNext(transactions);
         return _this;
     };
 
     this.revertTo = function (index) {
         transactions = transactions.slice(0, index + 1);
-        _this.stream.onNext(transactions);
+        _this.updates.onNext(transactions);
         return _this;
     };
 };

@@ -47,36 +47,23 @@ var Accountant = function Accountant(inventory, ledger) {
 
     _classCallCheck(this, Accountant);
 
-    var forceStreamEmit = new _rx2["default"].ReplaySubject(1);
     var currentIndex = ledger.peek().length - 1;
-    var locked = true;
+    var isTimeTravelling = false;
 
-    // prime the stream
-    forceStreamEmit.onNext({});
+    var currentIndexStream = new _rx2["default"].ReplaySubject(1);
+    var isTimeTravellingStream = new _rx2["default"].ReplaySubject(1);
 
-    this.stream = _rx2["default"].Observable.combineLatest(ledger.stream, forceStreamEmit, function () {
-        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-            args[_key] = arguments[_key];
-        }
-
-        return args;
-    }).map(function (_ref) {
-        var _ref2 = _slicedToArray(_ref, 1);
-
-        var transactions = _ref2[0];
-
-        if (locked) currentIndex = transactions.length - 1;
-        return { transactions: transactions, currentIndex: currentIndex, locked: locked };
-    });
+    currentIndexStream.startWith(currentIndex);
+    isTimeTravellingStream.startWith(isTimeTravelling);
 
     this.goto = function (index) {
-        var newLocked = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-
-        locked = newLocked;
         currentIndex = (0, _utilsClamp2["default"])(index, 0, ledger.peek().length - 1);
+        isTimeTravelling = true;
+        console.log(currentIndexStream);
+        currentIndexStream.onNext(currentIndex);
+        isTimeTravellingStream.onNext(isTimeTravelling);
         inventory.toggleLock(true);
         inventory.set(ledger.peek()[currentIndex].state, true);
-        forceStreamEmit.onNext({});
     };
 
     this.rewind = function (amount) {
@@ -86,24 +73,49 @@ var Accountant = function Accountant(inventory, ledger) {
         return _this.goto(currentIndex + amount);
     };
 
-    this.pause = function () {
-        locked = false;
-        inventory.toggleLock(true);
-        forceStreamEmit.onNext({});
-    };
+    this.updates = _rx2["default"].Observable.combineLatest(ledger.updates, currentIndexStream, isTimeTravellingStream).map(function (_ref) {
+        var _ref2 = _slicedToArray(_ref, 3);
 
-    this.resume = function () {
-        _this.goto(ledger.peek().length, true);
-        inventory.toggleLock(false, true);
-        locked = true;
-    };
+        var transactions = _ref2[0];
+        var currentIndex = _ref2[1];
+        var isTimeTravelling = _ref2[2];
+        return { transactions: transactions, currentIndex: currentIndex, isTimeTravelling: isTimeTravelling };
+    });
 
-    this.commit = function () {
-        locked = true;
-        inventory.toggleLock(false);
-        inventory.set(ledger.peek()[currentIndex].state);
-        ledger.revertTo(currentIndex);
-    };
+    // const forceStreamEmit = new Rx.ReplaySubject(1);
+    // let currentIndex = ledger.peek().length - 1;
+    // let locked = true;
+    //
+    // // prime the stream
+    // forceStreamEmit.onNext({});
+    //
+    // this.stream = Rx.Observable
+    //     .combineLatest(ledger.stream, forceStreamEmit, (...args) => args)
+    //     .map(([transactions]) => {
+    //         if (locked) currentIndex = transactions.length - 1;
+    //         return {transactions, currentIndex, locked};
+    //     });
+    //
+    //
+    //
+    // this.pause = () => {
+    //     locked = false;
+    //     inventory.toggleLock(true);
+    //     forceStreamEmit.onNext({});
+    // };
+    //
+    // this.resume = () => {
+    //     this.goto(ledger.peek().length, true);
+    //     inventory.toggleLock(false, true);
+    //     locked = true;
+    // };
+    //
+    // this.commit = () => {
+    //     locked = true;
+    //     inventory.toggleLock(false);
+    //     inventory.set(ledger.peek()[currentIndex].state);
+    //     ledger.revertTo(currentIndex);
+    // };
 };
 
 exports["default"] = Accountant;

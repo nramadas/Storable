@@ -101,4 +101,13 @@ describe("Inventory", function () {
             }
         });
     });
+
+    it("can be locked", function () {
+        var i = new Inventory();
+        i.set({ foo: "bar" });
+        expect(i.peek()).toEqual({ foo: "bar" });
+        i.toggleLock(true);
+        i.set({ foo: "baz" });
+        expect(i.peek()).toEqual({ foo: "bar" });
+    });
 });
