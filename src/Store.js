@@ -1,13 +1,11 @@
 import Rx                           from "rx";
-import map                          from "lodash/collection/map";
-import reduce                       from "lodash/collection/reduce";
 import Inventory                    from "./Inventory";
-import Ledger                       from "./Ledger";
+import Manager                      from "./Manager";
 import ensureDataIfNecessary        from "./utils/ensureDataIfNecessary";
 import buildObservableFromKeyPath   from "./utils/buildObservableFromKeyPath";
 
 export default class Store {
-    constructor(inventory = new Inventory(), ledger = new Ledger()) {
+    constructor(inventory = new Inventory(), manager = new Manager()) {
         /**
          * The arguments to query has several possibilities.
          * 1) Flattened list of arguments: The arguments are cast as an Array
@@ -29,7 +27,7 @@ export default class Store {
 
             // create an observable for each keyPath. ensure data at that
             // keyPath if the query calls for it.
-            const observables = map(keyPaths, (keyPath) => {
+            const observables = keyPaths.map((keyPath) => {
                 ensureDataIfNecessary(keyPath, inventory, this.emit.bind(this));
                 return buildObservableFromKeyPath(inventory.contents, keyPath)
             });
@@ -39,10 +37,10 @@ export default class Store {
             return Rx.Observable
                 .combineLatest(...observables, (...args) => args)
                 .map((allData) => {
-                    return reduce(allData, (result, data) => {
+                    return allData.reduce((result, data) => {
                         return {
-                            ...result,
                             ...data,
+                            ...result,
                         }
                     }, {});
                 });
@@ -52,8 +50,8 @@ export default class Store {
             // emit the new data on the inventory
             inventory.set(newData);
 
-            // record the entire entire contents of the inventory
-            ledger.record(newData, inventory.peek());
+            // inform the manager of the transaction
+            manager.record(newData);
         };
     }
 }

@@ -26,14 +26,10 @@ var Inventory = function Inventory() {
     _classCallCheck(this, Inventory);
 
     var locked = false;
-    this.innerContents = new _rx2["default"].ReplaySubject(1);
     this.contents = new _rx2["default"].ReplaySubject(1);
     this.contents.forEach(function (newState) {
         return state = newState;
     });
-    this.innerContents.filter(function () {
-        return !locked;
-    }).forEach(this.contents);
     this.toggleLock = function (newLock) {
         return locked = newLock;
     };
@@ -41,7 +37,10 @@ var Inventory = function Inventory() {
         return _extends({}, state);
     };
     this.set = function (newState) {
-        return _this.innerContents.onNext((0, _utilsRecursiveExtend2["default"])(state, newState));
+        return !locked && _this.contents.onNext((0, _utilsRecursiveExtend2["default"])(state, newState));
+    };
+    this.forceSet = function (newState) {
+        return _this.contents.onNext(newState);
     };
 };
 

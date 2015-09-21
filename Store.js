@@ -16,21 +16,13 @@ var _rx = require("rx");
 
 var _rx2 = _interopRequireDefault(_rx);
 
-var _lodashCollectionMap = require("lodash/collection/map");
-
-var _lodashCollectionMap2 = _interopRequireDefault(_lodashCollectionMap);
-
-var _lodashCollectionReduce = require("lodash/collection/reduce");
-
-var _lodashCollectionReduce2 = _interopRequireDefault(_lodashCollectionReduce);
-
 var _Inventory = require("./Inventory");
 
 var _Inventory2 = _interopRequireDefault(_Inventory);
 
-var _Ledger = require("./Ledger");
+var _Manager = require("./Manager");
 
-var _Ledger2 = _interopRequireDefault(_Ledger);
+var _Manager2 = _interopRequireDefault(_Manager);
 
 var _utilsEnsureDataIfNecessary = require("./utils/ensureDataIfNecessary");
 
@@ -44,7 +36,7 @@ var Store = function Store() {
     var _this = this;
 
     var inventory = arguments.length <= 0 || arguments[0] === undefined ? new _Inventory2["default"]() : arguments[0];
-    var ledger = arguments.length <= 1 || arguments[1] === undefined ? new _Ledger2["default"]() : arguments[1];
+    var manager = arguments.length <= 1 || arguments[1] === undefined ? new _Manager2["default"]() : arguments[1];
 
     _classCallCheck(this, Store);
 
@@ -75,7 +67,7 @@ var Store = function Store() {
 
         // create an observable for each keyPath. ensure data at that
         // keyPath if the query calls for it.
-        var observables = (0, _lodashCollectionMap2["default"])(keyPaths, function (keyPath) {
+        var observables = keyPaths.map(function (keyPath) {
             (0, _utilsEnsureDataIfNecessary2["default"])(keyPath, inventory, _this.emit.bind(_this));
             return (0, _utilsBuildObservableFromKeyPath2["default"])(inventory.contents, keyPath);
         });
@@ -89,8 +81,8 @@ var Store = function Store() {
 
             return args;
         }])).map(function (allData) {
-            return (0, _lodashCollectionReduce2["default"])(allData, function (result, data) {
-                return _extends({}, result, data);
+            return allData.reduce(function (result, data) {
+                return _extends({}, data, result);
             }, {});
         });
     };
@@ -99,8 +91,8 @@ var Store = function Store() {
         // emit the new data on the inventory
         inventory.set(newData);
 
-        // record the entire entire contents of the inventory
-        ledger.record(newData, inventory.peek());
+        // inform the manager of the transaction
+        manager.record(newData);
     };
 };
 

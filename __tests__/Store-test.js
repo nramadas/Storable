@@ -3,84 +3,71 @@
 
 jest.dontMock("../../Store.js");
 var Inventory = require("../../Inventory");
-var Ledger = require("../../Ledger");
+var Manager = require("../../Manager");
 var Store = require("../../Store");
 var Rx = require("rx");
 
 describe("Store", function () {
     it("has a query method", function () {
         var i = new Inventory();
-        var l = new Ledger();
-        var s = new Store(i, l);
+        var m = new Manager(i);
+        var s = new Store(i, m);
 
         expect(s.query).not.toBeUndefined();
     });
 
     it("returns an observable when query is called", function () {
         var i = new Inventory();
-        var l = new Ledger();
-        var s = new Store(i, l);
+        var m = new Manager(i);
+        var s = new Store(i, m);
 
         expect(s.query("foo") instanceof Rx.Observable).toBeTruthy();
     });
 
     it("returns an observable when queried with nested keys", function () {
         var i = new Inventory();
-        var l = new Ledger();
-        var s = new Store(i, l);
+        var m = new Manager(i);
+        var s = new Store(i, m);
 
         expect(s.query("foo", "bar", "boo", "baz") instanceof Rx.Observable).toBeTruthy();
     });
 
     it("returns an observable with keys aliased", function () {
         var i = new Inventory();
-        var l = new Ledger();
-        var s = new Store(i, l);
+        var m = new Manager(i);
+        var s = new Store(i, m);
 
         expect(s.query("foo", { alias: "bar" }) instanceof Rx.Observable).toBeTruthy();
     });
 
     it("returns an observable with nested keys aliased", function () {
         var i = new Inventory();
-        var l = new Ledger();
-        var s = new Store(i, l);
+        var m = new Manager(i);
+        var s = new Store(i, m);
 
         expect(s.query("foo", "bar", "boo", "baz", { alias: "boom" }) instanceof Rx.Observable).toBeTruthy();
     });
 
     it("returns an observable when queried with multiple keypaths", function () {
         var i = new Inventory();
-        var l = new Ledger();
-        var s = new Store(i, l);
+        var m = new Manager(i);
+        var s = new Store(i, m);
 
         expect(s.query(["foo", "bar"], ["boo", "baz"]) instanceof Rx.Observable).toBeTruthy();
     });
 
     it("returns an observable when queried with multiple keypaths aliased", function () {
         var i = new Inventory();
-        var l = new Ledger();
-        var s = new Store(i, l);
+        var m = new Manager(i);
+        var s = new Store(i, m);
 
         expect(s.query(["foo", "bar", { alias: "thing1" }], ["boo", "baz", { alias: "thing2" }]) instanceof Rx.Observable).toBeTruthy();
     });
 
-    it("allows data to be emitted and records the result into the ledger", function () {
-        var i = new Inventory();
-        var l = new Ledger();
-        var s = new Store(i, l);
-        var callback = jest.genMockFunction();
-
-        s.query("foo").forEach(callback);
-        s.emit({ foo: "bar" });
-
-        expect(callback.mock.calls[0][0]).toEqual({ foo: "bar" });
-        expect(l.peek()).toEqual([{ delta: { foo: "bar" }, state: { foo: "bar" } }]);
-    });
-
     it("allows multiple values to be emitted at once", function () {
         var i = new Inventory();
-        var l = new Ledger();
-        var s = new Store(i, l);
+        var m = new Manager(i);
+        var s = new Store(i, m);
         var callback = jest.genMockFunction();
 
         s.query(["foo", "bar", { alias: "baz" }], ["boo", "bad", { alias: "gah" }]).forEach(callback);
@@ -92,23 +79,35 @@ describe("Store", function () {
             baz: "thing1",
             gah: "thing2"
         });
+    });
 
-        expect(l.peek()).toEqual([{
+    it("has the manager record transactions", function () {
+        var i = new Inventory();
+        var m = new Manager(i);
+        var s = new Store(i, m);
+        var callback = jest.genMockFunction();
+
+        m.updates.forEach(callback);
+
+        s.emit({ foo: { bar: "thing1" } });
+        s.emit({ boo: { bad: "thing2" } });
+
+        expect(callback.mock.calls[2][0].transactions).toEqual([{
+            delta: {},
+            state: {}
+        }, {
             delta: { foo: { bar: "thing1" } },
             state: { foo: { bar: "thing1" } }
         }, {
             delta: { boo: { bad: "thing2" } },
-            state: {
-                foo: { bar: "thing1" },
-                boo: { bad: "thing2" }
-            }
+            state: { foo: { bar: "thing1" }, boo: { bad: "thing2" } }
         }]);
     });
 
     it("lets you seed data or ensure data", function () {
         var i = new Inventory();
-        var l = new Ledger();
-        var s = new Store(i, l);
+        var m = new Manager(i);
+        var s = new Store(i, m);
         var callback = jest.genMockFunction();
         var ensurer = function ensurer(saveData) {
             return saveData("thing");
@@ -123,8 +122,8 @@ describe("Store", function () {
 
     it("won't ensure data that already exists", function () {
         var i = new Inventory();
-        var l = new Ledger();
-        var s = new Store(i, l);
+        var m = new Manager(i);
+        var s = new Store(i, m);
         var ensurer = function ensurer(saveData) {
             return savaData("thing");
         };
@@ -139,8 +138,8 @@ describe("Store", function () {
 
     it("doesn't emit events on data that does not change", function () {
         var i = new Inventory();
-        var l = new Ledger();
-        var s = new Store(i, l);
+        var m = new Manager(i);
+        var s = new Store(i, m);
         var callback = jest.genMockFunction();
 
         s.query("foo", "bar").forEach(callback);

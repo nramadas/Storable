@@ -8,7 +8,7 @@ export default class Inventory {
         this.contents.forEach(newState => state = newState);
         this.toggleLock = (newLock) => locked = newLock;
         this.peek = () => ({...state});
-        this.set = (newState) => this.contents.onNext(recursiveExtend(state, newState));
-
+        this.set = (newState) => !locked && this.contents.onNext(recursiveExtend(state, newState));
+        this.forceSet = (newState) => this.contents.onNext(newState);
     }
 }
