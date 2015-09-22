@@ -5,7 +5,7 @@ import ensureDataIfNecessary        from "./utils/ensureDataIfNecessary";
 import buildObservableFromKeyPath   from "./utils/buildObservableFromKeyPath";
 
 export default class Store {
-    constructor(inventory = new Inventory(), manager = new Manager()) {
+    constructor(inventory = new Inventory(), manager) {
         /**
          * The arguments to query has several possibilities.
          * 1) Flattened list of arguments: The arguments are cast as an Array
@@ -51,7 +51,7 @@ export default class Store {
             inventory.set(newData);
 
             // inform the manager of the transaction
-            manager.record(newData);
+            if (manager) manager.record(newData);
         };
     }
 }

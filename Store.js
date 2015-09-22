@@ -32,11 +32,10 @@ var _utilsBuildObservableFromKeyPath = require("./utils/buildObservableFromKeyPa
 
 var _utilsBuildObservableFromKeyPath2 = _interopRequireDefault(_utilsBuildObservableFromKeyPath);
 
-var Store = function Store() {
+var Store = function Store(inventory, manager) {
     var _this = this;
 
-    var inventory = arguments.length <= 0 || arguments[0] === undefined ? new _Inventory2["default"]() : arguments[0];
-    var manager = arguments.length <= 1 || arguments[1] === undefined ? new _Manager2["default"]() : arguments[1];
+    if (inventory === undefined) inventory = new _Inventory2["default"]();
 
     _classCallCheck(this, Store);
 
@@ -92,7 +91,7 @@ var Store = function Store() {
         inventory.set(newData);
 
         // inform the manager of the transaction
-        manager.record(newData);
+        if (manager) manager.record(newData);
     };
 };
 
