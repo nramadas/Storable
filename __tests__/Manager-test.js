@@ -184,4 +184,32 @@ describe("Manager", function () {
             }]
         });
     });
+
+    it("can commit transactions", function () {
+        var i = new Inventory();
+        var m = new Manager(i);
+        var s = new Store(i, m);
+        var callback = jest.genMockFunction();
+
+        m.updates.forEach(callback);
+        s.emit({ foo: "bar" });
+        s.emit({ foo: "baz" });
+        s.emit({ boo: "hoo" });
+
+        m.goto(1);
+        m.commit();
+
+        expect(i.peek()).toEqual({ foo: "bar" });
+        expect(callback.mock.calls[5][0]).toEqual({
+            currentLedgerIndex: 1,
+            isTimeTravelling: false,
+            transactions: [{
+                delta: {},
+                state: {}
+            }, {
+                delta: { foo: "bar" },
+                state: { foo: "bar" }
+            }]
+        });
+    });
 });

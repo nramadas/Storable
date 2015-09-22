@@ -32,7 +32,7 @@ export default class Manager {
             currentLedgerIndex = clamp(index, 0, ledger.peek().length - 1);
             isTimeTravelling = true;
             inventory.toggleLock(true);
-            inventory.forceSet(ledger.peek()[currentLedgerIndex].state, true);
+            inventory.forceSet(ledger.peek()[currentLedgerIndex].state);
             sendUpdate();
         };
 
@@ -53,6 +53,14 @@ export default class Manager {
         this.record = (delta) => {
             writeData(delta, privateInventory, ledger);
             if (!isTimeTravelling) currentLedgerIndex++;
+            sendUpdate();
+        };
+
+        this.commit = () => {
+            isTimeTravelling = false;
+            inventory.toggleLock(false);
+            inventory.forceSet(ledger.peek()[currentLedgerIndex].state);
+            ledger.revertTo(currentLedgerIndex);
             sendUpdate();
         };
 

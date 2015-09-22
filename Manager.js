@@ -58,7 +58,7 @@ var Manager = function Manager(inventory) {
         currentLedgerIndex = (0, _utilsClamp2["default"])(index, 0, ledger.peek().length - 1);
         isTimeTravelling = true;
         inventory.toggleLock(true);
-        inventory.forceSet(ledger.peek()[currentLedgerIndex].state, true);
+        inventory.forceSet(ledger.peek()[currentLedgerIndex].state);
         sendUpdate();
     };
 
@@ -79,6 +79,14 @@ var Manager = function Manager(inventory) {
     this.record = function (delta) {
         writeData(delta, privateInventory, ledger);
         if (!isTimeTravelling) currentLedgerIndex++;
+        sendUpdate();
+    };
+
+    this.commit = function () {
+        isTimeTravelling = false;
+        inventory.toggleLock(false);
+        inventory.forceSet(ledger.peek()[currentLedgerIndex].state);
+        ledger.revertTo(currentLedgerIndex);
         sendUpdate();
     };
 

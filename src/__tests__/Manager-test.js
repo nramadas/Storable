@@ -208,4 +208,35 @@ describe("Manager", () => {
             ],
         });
     });
+
+    it("can commit transactions", () => {
+        const i = new Inventory();
+        const m = new Manager(i);
+        const s = new Store(i, m);
+        const callback = jest.genMockFunction();
+
+        m.updates.forEach(callback);
+        s.emit({foo: "bar"});
+        s.emit({foo: "baz"});
+        s.emit({boo: "hoo"});
+
+        m.goto(1);
+        m.commit();
+
+        expect(i.peek()).toEqual({foo: "bar"});
+        expect(callback.mock.calls[5][0]).toEqual({
+            currentLedgerIndex: 1,
+            isTimeTravelling: false,
+            transactions: [
+                {
+                    delta: {},
+                    state: {},
+                },
+                {
+                    delta: {foo: "bar"},
+                    state: {foo: "bar"},
+                }
+            ],
+        });
+    });
 });
