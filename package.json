@@ -40,12 +40,12 @@
   "devDependencies": {
     "babel": "^5.8.23",
     "babel-jest": "^5.3.0",
-    "jest-cli": "^0.5.0",
-    "lodash": "^3.10.1",
-    "rx": "^3.1.2"
+    "jest-cli": "^0.5.0"
+  },
+  "peerDependencies": {
+    "rx": ""
   },
   "dependencies": {
-    "lodash": "^3.10.1",
-    "rx": "^3.1.2"
+    "lodash": "^3.10.1"
   }
 }
